@@ -1,4 +1,5 @@
 const express = require("express")
+const path = require("path")
 const app = express()
 
 app.use(express.json())
@@ -56,6 +57,10 @@ function stats(){
     }
     return {total,alive,expired}
 }
+
+app.get("/",(req,res)=>{
+    res.sendFile(path.join(__dirname,"index.html"))
+})
 
 app.post("/create",(req,res)=>{
     if(!rl(req.ip)) return res.send("rate_limited")
@@ -158,4 +163,4 @@ app.post("/unwhitelist",(req,res)=>{
     res.send("ok")
 })
 
-app.listen(3000)
+app.listen(process.env.PORT || 3000)
