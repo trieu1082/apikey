@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Key Panel</title>
+<style>
+body{background:#020617;color:#fff;font-family:sans-serif;text-align:center}
+.box{margin:40px auto;width:340px;padding:20px;background:#0f172a;border-radius:10px}
+input,button{width:100%;padding:10px;margin:5px 0;border:none;border-radius:6px}
+input{background:#020617;color:#fff}
+button{background:#2563eb;color:#fff;cursor:pointer}
+pre{background:#000;padding:10px;border-radius:6px;height:120px;overflow:auto}
+</style>
+</head>
+
+<body>
+
+<div class="box">
+<input id="k" placeholder="Owner key">
+<button onclick="login()">Login</button>
+
+<div id="m" style="display:none">
+
+<button onclick="c('24h')">24H</button>
+<button onclick="c('3d')">3D</button>
+<button onclick="c('1m')">1M</button>
+<button onclick="c('lifetime')">LIFETIME</button>
+
+<input id="h" placeholder="Hours">
+<button onclick="custom()">Custom</button>
+
+<button onclick="loadStats()">Stats</button>
+<button onclick="loadLogs()">Logs</button>
+
+<pre id="out"></pre>
+
+</div>
+</div>
+
+<script>
+let KEY=""
+
+function login(){
+    KEY=document.getElementById("k").value
+    document.getElementById("m").style.display="block"
+}
+
+async function c(t){
+    let r=await fetch("/create",{
+        method:"POST",
+        headers:{"Content-Type":"application/json","x-owner-key":KEY},
+        body:JSON.stringify({type:t})
+    })
+    out.innerText=await r.text()
+}
+
+async function custom(){
+    let h=document.getElementById("h").value
+    let r=await fetch("/create",{
+        method:"POST",
+        headers:{"Content-Type":"application/json","x-owner-key":KEY},
+        body:JSON.stringify({type:"custom",hours:Number(h)})
+    })
+    out.innerText=await r.text()
+}
+
+async function loadStats(){
+    let r=await fetch("/stats",{headers:{"x-owner-key":KEY}})
+    out.innerText=JSON.stringify(await r.json(),null,2)
+}
+
+async function loadLogs(){
+    let r=await fetch("/logs",{headers:{"x-owner-key":KEY}})
+    out.innerText=JSON.stringify(await r.json(),null,2)
+}
+</script>
+
+</body>
+</html>
